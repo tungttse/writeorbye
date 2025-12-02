@@ -2,6 +2,7 @@
 
 import { useState, useEffect, FormEvent } from 'react';
 import CircularTimer from './components/CircularTimer';
+import LexicalEditor from './components/LexicalEditor';
 
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -218,19 +219,8 @@ export default function Home() {
         </button>
       </aside>
       <div className="relative flex-1">
-        <textarea
-          className="h-full w-full bg-white dark:bg-gray-900 text-black dark:text-white"
-          style={{
-            paddingTop: '48px',
-            paddingBottom: '45vh',
-            paddingLeft: 'calc((100% - 720px) / 2)',
-            paddingRight: 'calc((100% - 720px) / 2)',
-            fontFamily: "'Roboto Mono', serif",
-            fontSize: '18px', // Increased font size
-          }}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        ></textarea>
+        <LexicalEditor />
+       
         {/* Word Count Display */}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-200 dark:bg-gray-800 text-center">
           {wordCount} of {wordTarget}
