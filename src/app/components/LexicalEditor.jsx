@@ -8,6 +8,7 @@ import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
 import {ContentEditable} from '@lexical/react/LexicalContentEditable';
 import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
 import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary';
+import ToolbarPlugin from '../plugins/ToolbarPlugin';
 
 const theme = {
   // Theme styling goes here
@@ -32,7 +33,10 @@ function LexicalEditor() {
 
   return (
     <LexicalComposer initialConfig={initialConfig}>
+         
       <div className="editor-container">
+      <ToolbarPlugin />
+      <div className="editor-inner">
         <RichTextPlugin
           contentEditable={
             <ContentEditable
@@ -43,8 +47,10 @@ function LexicalEditor() {
           }
           ErrorBoundary={LexicalErrorBoundary}
         />
+       
         <HistoryPlugin />
         <AutoFocusPlugin />
+        </div>
       </div>
     </LexicalComposer>
   );
