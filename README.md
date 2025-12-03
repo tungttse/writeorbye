@@ -4,16 +4,11 @@
 
 **Write or Bye** is a web-based productivity tool designed for writers who struggle with procrastination. The app enforces focused writing sessions by setting time constraints and consequences, ensuring users stay on track with their writing goals.
 
+
+![WriteOrBye](https://writeorbye.com)
+
 ![Homepage](./homepage.png)
 
-## 🛠️ Tech Stack
-
-- **Frontend:** Next.js, Tailwind CSS
-- **Backend:** Node.js, Express.js
-- **Database:** PostgreSQL / Firebase (TBD)
-- **Authentication:** NextAuth.js / Firebase Auth (TBD)
-- **Deployment:** Vercel (Frontend), DigitalOcean/AWS (Backend)
-- editor https://lexical.dev/docs/getting-started/react
 
 ## 🎯 Core Features (MVP - Minimum Viable Product)
 
