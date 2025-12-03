@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, FormEvent, useRef } from 'react';
 import CircularTimer from './components/CircularTimer';
 import LexicalEditor from './components/LexicalEditor';
 
@@ -13,6 +13,7 @@ export default function Home() {
   const [showWordTargetInput, setShowWordTargetInput] = useState(false);
   const [showTimerInput, setShowTimerInput] = useState(false);
   const [isTimerActive, setIsTimerActive] = useState(false);
+  const editorRef = useRef(null);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -38,6 +39,9 @@ export default function Home() {
 
 
   const clearText = () => {
+    if (editorRef.current) {
+      (editorRef.current as { clear: () => void }).clear();
+    }
     setText('');
   };
 
@@ -56,6 +60,12 @@ export default function Home() {
       setWordTarget(parseInt(target.value, 10));
       setShowWordTargetInput(false);
     }
+  };
+
+  const handleQuickTimerSelect = (minutes: number) => {
+    setTimer(minutes * 60); // Convert minutes to seconds
+    setIsTimerActive(true);
+    setShowTimerInput(false);
   };
 
   const handleTimerSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -186,7 +196,7 @@ export default function Home() {
         </button>
       </aside>
       <div className="relative flex-1">
-        <LexicalEditor />
+        <LexicalEditor ref={editorRef} />
        
         {/* Word Count Display */}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-200 dark:bg-gray-800 text-center">
@@ -239,7 +249,26 @@ export default function Home() {
         <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20">
           <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-1/4">
             <h2 className="text-lg font-bold mb-4">Set Timer</h2>
+            
+            {/* Quick Select Buttons */}
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Quick Select:</p>
+              <div className="grid grid-cols-3 gap-2">
+                {[5, 10, 15, 20, 25, 30].map((minutes) => (
+                  <button
+                    key={minutes}
+                    type="button"
+                    onClick={() => handleQuickTimerSelect(minutes)}
+                    className="px-4 py-2 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md transition-colors font-medium"
+                  >
+                    {minutes} min
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <form onSubmit={handleTimerSubmit}>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Or enter custom time:</p>
               <input
                 type="number"
                 name="timer"

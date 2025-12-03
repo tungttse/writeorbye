@@ -1,6 +1,5 @@
-import { $getRoot, $getSelection } from 'lexical';
-import { useEffect } from 'react';
 import { ParagraphNode } from 'lexical';
+import { forwardRef } from 'react';
 
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -9,6 +8,7 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import ToolbarPlugin from '../plugins/ToolbarPlugin';
+import ClearEditorPlugin from '../plugins/ClearEditorPlugin';
 
 const theme = {
     code: 'editor-code',
@@ -51,7 +51,7 @@ function onError(error) {
     console.error(error);
 }
 
-function LexicalEditor() {
+const LexicalEditor = forwardRef(function LexicalEditor(props, ref) {
     const initialConfig = {
         namespace: 'MyEditor',
         theme,
@@ -61,7 +61,6 @@ function LexicalEditor() {
 
     return (
         <LexicalComposer initialConfig={initialConfig}>
-
             <div className="editor-container">
                 <ToolbarPlugin />
                 <div className="editor-inner">
@@ -75,13 +74,13 @@ function LexicalEditor() {
                         }
                         ErrorBoundary={LexicalErrorBoundary}
                     />
-
+                    <ClearEditorPlugin clearEditorRef={ref} />
                     <HistoryPlugin />
                     <AutoFocusPlugin />
                 </div>
             </div>
         </LexicalComposer>
     );
-}
+});
 
 export default LexicalEditor;
