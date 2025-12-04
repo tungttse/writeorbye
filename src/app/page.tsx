@@ -7,7 +7,7 @@ import LexicalEditor from './components/LexicalEditor';
 export default function Home() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [text, setText] = useState('');
+  const [wordCount, setWordCount] = useState(0);
   const [wordTarget, setWordTarget] = useState(0);
   const [timer, setTimer] = useState(0);
   const [showWordTargetInput, setShowWordTargetInput] = useState(false);
@@ -24,6 +24,7 @@ export default function Home() {
   }, [isDarkMode]);
 
   const toggleFullScreen = () => {
+    console.log('toggleFullScreen function called');
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
     } else if (document.exitFullscreen) {
@@ -33,23 +34,30 @@ export default function Home() {
   };
 
   const toggleDarkMode = () => {
+    console.log('toggleDarkMode function called');
     setIsDarkMode(!isDarkMode);
   };
 
 
 
   const clearText = () => {
+    console.log('clearText function called');
     if (editorRef.current) {
       (editorRef.current as { clear: () => void }).clear();
     }
-    setText('');
+  };
+
+  const handleWordCountChange = (count: number) => {
+    setWordCount(count);
   };
 
   const handleSetWordTarget = () => {
+    console.log('handleSetWordTarget function called');
     setShowWordTargetInput(true);
   };
 
   const handleSetTimer = () => {
+    console.log('handleSetTimer function called');
     setShowTimerInput(true);
   };
 
@@ -83,120 +91,20 @@ export default function Home() {
     // Add any additional timeout logic here
   };
 
-  const wordCount = text.trim().split(/\s+/).length;
-
   return (
-    <div className="h-full w-full flex">
-      {/* Sidebar */}
-      <aside className="w-16 md:w-20 lg:w-24 bg-gray-200 dark:bg-gray-800 flex flex-col items-center py-4 space-y-4">
-        <button
-          className="p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
-          onClick={toggleFullScreen}
-          title="Full Screen"
-        >
-          {/* Full Screen Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 3H5a2 2 0 00-2 2v3m0 10v3a2 2 0 002 2h3m10-18h3a2 2 0 012 2v3m0 10v3a2 2 0 01-2 2h-3"
-            />
-          </svg>
-        </button>
-        <button
-          className="p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
-          onClick={toggleDarkMode}
-          title="Dark Mode"
-        >
-          {/* Dark Mode Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.05 19.95l-.707-.707M21 12h-1M4 12H3m16.66 4.66l-.707-.707M4.05 4.05l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-            />
-          </svg>
-        </button>
-        <button
-          className="p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
-          onClick={handleSetWordTarget}
-          title="Set Target"
-        >
-          {/* Set Target Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm0-14a6 6 0 100 12 6 6 0 000-12zm0 10a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z"
-            />
-          </svg>
-        </button>
-        <button
-          className="p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
-          onClick={handleSetTimer}
-          title="Set Timer"
-        >
-          {/* Set Timer Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-        </button>
-        <button
-          className="p-2 rounded-md hover:bg-gray-300 dark:hover:bg-gray-700"
-          onClick={clearText}
-          title="Clear Text"
-        >
-          {/* Clear Text Icon */}
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-700 dark:text-gray-300"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-      </aside>
+    <div className="h-full w-full flex flex-col">
       <div className="relative flex-1">
-        <LexicalEditor ref={editorRef} />
+        <LexicalEditor 
+          ref={editorRef}
+          {...({
+            onToggleFullScreen: toggleFullScreen,
+            onToggleDarkMode: toggleDarkMode,
+            onSetWordTarget: handleSetWordTarget,
+            onSetTimer: handleSetTimer,
+            onClearText: clearText,
+            onWordCountChange: handleWordCountChange
+          } as any)}
+        />
        
         {/* Word Count Display */}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-200 dark:bg-gray-800 text-center">

@@ -304,12 +304,20 @@ body {
   
   .toolbar {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 1px;
     background: #fff;
     padding: 4px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     vertical-align: middle;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    display: flex;
+    align-items: center;
   }
   
   .toolbar button.toolbar-item {
@@ -320,6 +328,9 @@ body {
     padding: 8px;
     cursor: pointer;
     vertical-align: middle;
+    position: relative;
+    z-index: 10;
+    pointer-events: auto !important;
   }
   
   .toolbar button.toolbar-item:disabled {
@@ -355,6 +366,24 @@ body {
   
   .toolbar .toolbar-item:hover:not([disabled]) {
     background-color: #eee;
+  }
+
+  .toolbar .toolbar-item svg {
+    stroke: currentColor;
+    color: #444;
+    pointer-events: none;
+  }
+
+  .dark .toolbar {
+    background: #1f2937;
+  }
+
+  .dark .toolbar .toolbar-item svg {
+    color: #d1d5db;
+  }
+
+  .dark .toolbar .toolbar-item:hover:not([disabled]) {
+    background-color: #374151;
   }
   
   .toolbar .divider {
