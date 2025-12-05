@@ -122,8 +122,8 @@ export default function Home() {
 
       {/* Word Target Modal */}
       {showWordTargetInput && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-1/4">
+        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20 px-4">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Set Word Target</h2>
             <form onSubmit={handleWordTargetSubmit}>
               <input
@@ -154,8 +154,8 @@ export default function Home() {
 
       {/* Timer Modal */}
       {showTimerInput && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-1/4">
+        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20 px-4">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Set Timer</h2>
             
             {/* Quick Select Buttons */}

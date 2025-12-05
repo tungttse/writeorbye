@@ -319,6 +319,71 @@ body {
     display: flex;
     align-items: center;
   }
+
+  .toolbar-right-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  .toolbar-mobile-menu {
+    display: none;
+    position: relative;
+  }
+
+  .toolbar-mobile-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    min-width: 180px;
+    z-index: 1000;
+    overflow: hidden;
+  }
+
+  .dark .toolbar-mobile-dropdown {
+    background: #1f2937;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  }
+
+  .toolbar-mobile-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: none;
+    color: #444;
+    font-size: 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+  }
+
+  .toolbar-mobile-menu-item:hover {
+    background-color: #f3f4f6;
+  }
+
+  .dark .toolbar-mobile-menu-item {
+    color: #d1d5db;
+  }
+
+  .dark .toolbar-mobile-menu-item:hover {
+    background-color: #374151;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 768px) {
+    .toolbar-right-buttons {
+      display: none;
+    }
+
+    .toolbar-mobile-menu {
+      display: block;
+    }
+  }
   
   .toolbar button.toolbar-item {
     border: 0;
