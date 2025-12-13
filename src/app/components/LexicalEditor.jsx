@@ -10,6 +10,7 @@ import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import ToolbarPlugin from '../plugins/ToolbarPlugin';
 import ClearEditorPlugin from '../plugins/ClearEditorPlugin';
 import WordCountPlugin from '../plugins/WordCountPlugin';
+import AutoSavePlugin from '../plugins/AutoSavePlugin';
 
 const theme = {
 	code: 'editor-code',
@@ -95,6 +96,7 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 					/>
 					<ClearEditorPlugin clearEditorRef={ref} />
 					<WordCountPlugin onWordCountChange={onWordCountChange} />
+					<AutoSavePlugin />
 					<HistoryPlugin />
 					<AutoFocusPlugin />
 				</div>
