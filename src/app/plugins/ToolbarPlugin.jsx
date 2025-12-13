@@ -35,16 +35,6 @@ export default function ToolbarPlugin({
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
   
-  useEffect(() => {
-    console.log('ToolbarPlugin mounted, buttons should be clickable');
-    console.log('Button handlers:', {
-      onToggleFullScreen: typeof onToggleFullScreen,
-      onToggleDarkMode: typeof onToggleDarkMode,
-      onSetWordTarget: typeof onSetWordTarget,
-      onSetTimer: typeof onSetTimer,
-      onClearText: typeof onClearText
-    });
-  }, [onToggleFullScreen, onToggleDarkMode, onSetWordTarget, onSetTimer, onClearText]);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [isBold, setIsBold] = useState(false);
