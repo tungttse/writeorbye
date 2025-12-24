@@ -3,10 +3,9 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
  */
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {mergeRegister} from '@lexical/utils';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { mergeRegister } from '@lexical/utils';
 import {
   $getSelection,
   $isRangeSelection,
@@ -19,38 +18,46 @@ import {
   SELECTION_CHANGE_COMMAND,
   UNDO_COMMAND,
 } from 'lexical';
-import {useCallback, useEffect, useRef, useState} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Undo2,
-  Redo2,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
-  Timer,
-  Target,
-  Trash2,
-  Moon,
-  Sun,
-  Maximize,
-  Download,
-  Settings,
-  HelpCircle,
-  Mail,
-  Menu,
-  Home
+  Undo2, Redo2, Bold, Italic, Underline, Strikethrough,
+  AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Timer, Target, Trash2, Moon, Sun, Maximize,
+  Download, Settings, HelpCircle, Mail, Menu, Home
 } from 'lucide-react';
 import Link from 'next/link';
 
-function Divider() {
-  return <div className="divider" />;
-}
+const Divider = () => <div className="divider" />;
 
-export default function ToolbarPlugin({ 
+// Reusable toolbar button component
+const ToolbarButton = ({ onClick, disabled, active, spaced, title, ariaLabel, children }) => (
+  <button
+    type="button"
+    disabled={disabled}
+    onClick={onClick}
+    className={`toolbar-item ${spaced ? 'spaced' : ''} ${active ? 'active' : ''} ${disabled ? 'opacity-40' : ''}`}
+    aria-label={ariaLabel}
+    title={title}
+  >
+    {children}
+  </button>
+);
+
+// Reusable mobile menu item component
+const MobileMenuItem = ({ onClick, disabled, ariaLabel, icon: Icon, label, isDynamic, dynamicIcon: DynamicIcon }) => (
+  <button
+    type="button"
+    disabled={disabled}
+    onClick={onClick}
+    className={`toolbar-mobile-menu-item ${disabled ? 'opacity-40' : ''}`}
+    aria-label={ariaLabel}
+  >
+    {isDynamic && DynamicIcon ? <DynamicIcon size={18} style={{ marginRight: '8px' }} /> : <Icon size={18} style={{ marginRight: '8px' }} />}
+    {label}
+  </button>
+);
+
+export default function ToolbarPlugin({
   onToggleFullScreen = () => {},
   onToggleDarkMode = () => {},
   onSetWordTarget = () => {},
@@ -66,7 +73,7 @@ export default function ToolbarPlugin({
 }) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
-  
+
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [isBold, setIsBold] = useState(false);
@@ -78,7 +85,6 @@ export default function ToolbarPlugin({
   const $updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
-      // Update text format
       setIsBold(selection.hasFormat('bold'));
       setIsItalic(selection.hasFormat('italic'));
       setIsUnderline(selection.hasFormat('underline'));
@@ -88,481 +94,150 @@ export default function ToolbarPlugin({
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(({editorState}) => {
-        editorState.read(
-          () => {
-            $updateToolbar();
-          },
-          {editor},
-        );
+      editor.registerUpdateListener(({ editorState }) => {
+        editorState.read(() => $updateToolbar(), { editor });
       }),
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
-        (_payload, _newEditor) => {
-          $updateToolbar();
-          return false;
-        },
-        COMMAND_PRIORITY_LOW,
-      ),
-      editor.registerCommand(
-        CAN_UNDO_COMMAND,
-        (payload) => {
-          setCanUndo(payload);
-          return false;
-        },
-        COMMAND_PRIORITY_LOW,
-      ),
-      editor.registerCommand(
-        CAN_REDO_COMMAND,
-        (payload) => {
-          setCanRedo(payload);
-          return false;
-        },
-        COMMAND_PRIORITY_LOW,
-      ),
+      editor.registerCommand(SELECTION_CHANGE_COMMAND, () => { $updateToolbar(); return false; }, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(CAN_UNDO_COMMAND, (payload) => { setCanUndo(payload); return false; }, COMMAND_PRIORITY_LOW),
+      editor.registerCommand(CAN_REDO_COMMAND, (payload) => { setCanRedo(payload); return false; }, COMMAND_PRIORITY_LOW),
     );
   }, [editor, $updateToolbar]);
 
   // Close mobile menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (toolbarRef.current && !toolbarRef.current.contains(event.target)) {
+    if (!isMobileMenuOpen) return;
+    const handleClickOutside = (e) => {
+      if (toolbarRef.current && !toolbarRef.current.contains(e.target)) {
         setIsMobileMenuOpen(false);
       }
     };
-
-    if (isMobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMobileMenuOpen]);
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
+  // Format buttons config
+  const formatButtons = [
+    { format: 'bold', icon: Bold, active: isBold, label: 'Format Bold' },
+    { format: 'italic', icon: Italic, active: isItalic, label: 'Format Italics' },
+    { format: 'underline', icon: Underline, active: isUnderline, label: 'Format Underline' },
+    { format: 'strikethrough', icon: Strikethrough, active: isStrikethrough, label: 'Format Strikethrough' },
+  ];
+
+  // Alignment buttons config
+  const alignButtons = [
+    { align: 'left', icon: AlignLeft, label: 'Left Align' },
+    { align: 'center', icon: AlignCenter, label: 'Center Align' },
+    { align: 'right', icon: AlignRight, label: 'Right Align' },
+    { align: 'justify', icon: AlignJustify, label: 'Justify Align', spaced: false },
+  ];
+
+  // Action buttons config
+  const actionButtons = [
+    { onClick: onToggleFullScreen, icon: Maximize, title: 'Full Screen', ariaLabel: 'Full Screen' },
+    { onClick: onToggleDarkMode, icon: isDarkMode ? Sun : Moon, title: isDarkMode ? 'Light Mode' : 'Dark Mode', ariaLabel: 'Dark Mode' },
+    { onClick: onSetWordTarget, icon: Target, title: 'Set Target', ariaLabel: 'Set Target' },
+    { onClick: onSetTimer, icon: Timer, title: 'Set Timer', ariaLabel: 'Set Timer' },
+    { onClick: onClearText, icon: Trash2, title: hasContent ? 'Clear Text' : 'Nothing to clear', ariaLabel: 'Clear Text', disabled: !hasContent, spaced: false },
+    { onClick: onOpenExport, icon: Download, title: hasContent ? 'Export' : 'Nothing to export', ariaLabel: 'Export', disabled: !hasContent },
+    { onClick: onOpenSettings, icon: Settings, title: 'Settings', ariaLabel: 'Settings', spaced: false },
+    { onClick: onOpenEmail, icon: Mail, title: hasContent ? 'Email to yourself' : 'Nothing to email', ariaLabel: 'Email', disabled: !hasContent, spaced: false },
+    { onClick: onOpenHelp, icon: HelpCircle, title: 'Help', ariaLabel: 'Help', spaced: false },
+  ];
+
+  // Mobile menu items config
+  const mobileMenuItems = [
+    { onClick: onToggleFullScreen, icon: Maximize, label: 'Full Screen', ariaLabel: 'Full Screen' },
+    { onClick: onToggleDarkMode, icon: isDarkMode ? Sun : Moon, label: isDarkMode ? 'Light Mode' : 'Dark Mode', ariaLabel: isDarkMode ? 'Light Mode' : 'Dark Mode' },
+    { onClick: onSetWordTarget, icon: Target, label: 'Set Target', ariaLabel: 'Set Target' },
+    { onClick: onSetTimer, icon: Timer, label: 'Set Timer', ariaLabel: 'Set Timer' },
+    { onClick: onClearText, icon: Trash2, label: 'Clear Text', ariaLabel: 'Clear Text', disabled: !hasContent },
+    { onClick: onOpenExport, icon: Download, label: 'Export', ariaLabel: 'Export', disabled: !hasContent },
+    { onClick: onOpenSettings, icon: Settings, label: 'Settings', ariaLabel: 'Settings' },
+    { onClick: onOpenHelp, icon: HelpCircle, label: 'Help', ariaLabel: 'Help' },
+    { onClick: onOpenEmail, icon: Mail, label: 'Email', ariaLabel: 'Email', disabled: !hasContent },
+  ];
 
   return (
     <div className={`toolbar ${!isSessionActive ? 'no-stats' : ''}`} ref={toolbarRef}>
       {/* Left side - Formatting buttons */}
       <div className="toolbar-left">
-        <Link
-          href="/"
-          className="toolbar-item spaced"
-          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-          aria-label="Home"
-          title="Back to Home">
+        <Link href="/" className="toolbar-item spaced" aria-label="Home" title="Back to Home">
           <Home size={18} />
         </Link>
         <Divider />
-        <button
-          disabled={!canUndo}
-          onClick={() => {
-            editor.dispatchCommand(UNDO_COMMAND, undefined);
-          }}
-          className="toolbar-item spaced"
-          aria-label="Undo">
+        <ToolbarButton disabled={!canUndo} onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)} spaced ariaLabel="Undo">
           <Undo2 size={18} />
-        </button>
-        <button
-          disabled={!canRedo}
-          onClick={() => {
-            editor.dispatchCommand(REDO_COMMAND, undefined);
-          }}
-          className="toolbar-item"
-          aria-label="Redo">
+        </ToolbarButton>
+        <ToolbarButton disabled={!canRedo} onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)} ariaLabel="Redo">
           <Redo2 size={18} />
-        </button>
+        </ToolbarButton>
         <Divider />
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
-          }}
-          className={'toolbar-item spaced ' + (isBold ? 'active' : '')}
-          aria-label="Format Bold">
-          <Bold size={18} />
-        </button>
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic');
-          }}
-          className={'toolbar-item spaced ' + (isItalic ? 'active' : '')}
-          aria-label="Format Italics">
-          <Italic size={18} />
-        </button>
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline');
-          }}
-          className={'toolbar-item spaced ' + (isUnderline ? 'active' : '')}
-          aria-label="Format Underline">
-          <Underline size={18} />
-        </button>
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough');
-          }}
-          className={'toolbar-item spaced ' + (isStrikethrough ? 'active' : '')}
-          aria-label="Format Strikethrough">
-          <Strikethrough size={18} />
-        </button>
+        {formatButtons.map(({ format, icon: Icon, active, label }) => (
+          <ToolbarButton
+            key={format}
+            onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, format)}
+            active={active}
+            spaced
+            ariaLabel={label}
+          >
+            <Icon size={18} />
+          </ToolbarButton>
+        ))}
         <Divider />
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'left');
-          }}
-          className="toolbar-item spaced"
-          aria-label="Left Align">
-          <AlignLeft size={18} />
-        </button>
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'center');
-          }}
-          className="toolbar-item spaced"
-          aria-label="Center Align">
-          <AlignCenter size={18} />
-        </button>
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'right');
-          }}
-          className="toolbar-item spaced"
-          aria-label="Right Align">
-          <AlignRight size={18} />
-        </button>
-        <button
-          onClick={() => {
-            editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, 'justify');
-          }}
-          className="toolbar-item"
-          aria-label="Justify Align">
-          <AlignJustify size={18} />
-        </button>
+        {alignButtons.map(({ align, icon: Icon, label, spaced = true }) => (
+          <ToolbarButton
+            key={align}
+            onClick={() => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, align)}
+            spaced={spaced}
+            ariaLabel={label}
+          >
+            <Icon size={18} />
+          </ToolbarButton>
+        ))}
       </div>
 
       {/* Right side - Action buttons */}
       <div className="toolbar-right">
         <Divider />
-        {/* Desktop buttons - hidden on mobile */}
         <div className="toolbar-right-buttons">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Full Screen button clicked');
-              console.log('Handler:', onToggleFullScreen);
-              if (typeof onToggleFullScreen === 'function') {
-                onToggleFullScreen();
-              } else {
-                console.error('onToggleFullScreen is not a function!', onToggleFullScreen);
-              }
-            }}
-            className="toolbar-item spaced"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Full Screen"
-            title="Full Screen">
-            <Maximize size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Dark Mode button clicked');
-              if (typeof onToggleDarkMode === 'function') {
-                onToggleDarkMode();
-              }
-            }}
-            className="toolbar-item spaced"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Dark Mode"
-            title={isDarkMode ? 'Light Mode' : 'Dark Mode'}>
-            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Set Target button clicked');
-              if (typeof onSetWordTarget === 'function') {
-                onSetWordTarget();
-              }
-            }}
-            className="toolbar-item spaced"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Set Target"
-            title="Set Target">
-            <Target size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('Set Timer button clicked');
-              if (typeof onSetTimer === 'function') {
-                onSetTimer();
-              }
-            }}
-            className="toolbar-item spaced"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Set Timer"
-            title="Set Timer">
-            <Timer size={18} />
-          </button>
-          <button
-            type="button"
-            disabled={!hasContent}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (!hasContent) return;
-              console.log('Clear Text button clicked');
-              if (typeof onClearText === 'function') {
-                onClearText();
-              }
-            }}
-            className={`toolbar-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
-            style={{ cursor: hasContent ? 'pointer' : 'not-allowed', zIndex: 1000, position: 'relative' }}
-            aria-label="Clear Text"
-            title={hasContent ? 'Clear Text' : 'Nothing to clear'}>
-            <Trash2 size={18} />
-          </button>
-          <button
-            type="button"
-            disabled={!hasContent}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (!hasContent) return;
-              if (typeof onOpenExport === 'function') {
-                onOpenExport();
-              }
-            }}
-            className={`toolbar-item spaced ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
-            style={{ cursor: hasContent ? 'pointer' : 'not-allowed', zIndex: 1000, position: 'relative' }}
-            aria-label="Export"
-            title={hasContent ? 'Export' : 'Nothing to export'}>
-            <Download size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (typeof onOpenSettings === 'function') {
-                onOpenSettings();
-              }
-            }}
-            className="toolbar-item"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Settings"
-            title="Settings">
-            <Settings size={18} />
-          </button>
-          <button
-            type="button"
-            disabled={!hasContent}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (!hasContent) return;
-              if (typeof onOpenEmail === 'function') {
-                onOpenEmail();
-              }
-            }}
-            className={`toolbar-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
-            style={{ cursor: hasContent ? 'pointer' : 'not-allowed', zIndex: 1000, position: 'relative' }}
-            aria-label="Email"
-            title={hasContent ? 'Email to yourself' : 'Nothing to email'}>
-            <Mail size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (typeof onOpenHelp === 'function') {
-                onOpenHelp();
-              }
-            }}
-            className="toolbar-item"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Help"
-            title="Help">
-            <HelpCircle size={18} />
-          </button>
+          {actionButtons.map(({ onClick, icon: Icon, title, ariaLabel, disabled, spaced = true }) => (
+            <ToolbarButton
+              key={ariaLabel}
+              onClick={disabled ? undefined : onClick}
+              disabled={disabled}
+              spaced={spaced}
+              title={title}
+              ariaLabel={ariaLabel}
+            >
+              <Icon size={18} />
+            </ToolbarButton>
+          ))}
         </div>
 
-        {/* Mobile menu button - shown only on mobile */}
+        {/* Mobile menu */}
         <div className="toolbar-mobile-menu">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setIsMobileMenuOpen(!isMobileMenuOpen);
-            }}
-            className="toolbar-item"
-            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="More Options"
-            title="More Options">
+          <ToolbarButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} ariaLabel="More Options" title="More Options">
             <Menu size={18} />
-          </button>
+          </ToolbarButton>
 
-          {/* Mobile dropdown menu */}
           {isMobileMenuOpen && (
             <div className="toolbar-mobile-dropdown">
-              <Link
-                href="/"
-                className="toolbar-mobile-menu-item"
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-label="Home">
+              <Link href="/" className="toolbar-mobile-menu-item" onClick={closeMobileMenu} aria-label="Home">
                 <Home size={18} style={{ marginRight: '8px' }} />
                 Back to Home
               </Link>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  if (typeof onToggleFullScreen === 'function') {
-                    onToggleFullScreen();
-                  }
-                }}
-                className="toolbar-mobile-menu-item"
-                aria-label="Full Screen">
-                <Maximize size={18} style={{ marginRight: '8px' }} />
-                Full Screen
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  if (typeof onToggleDarkMode === 'function') {
-                    onToggleDarkMode();
-                  }
-                }}
-                className="toolbar-mobile-menu-item"
-                aria-label={isDarkMode ? 'Light Mode' : 'Dark Mode'}>
-                {isDarkMode ? <Sun size={18} style={{ marginRight: '8px' }} /> : <Moon size={18} style={{ marginRight: '8px' }} />}
-                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  if (typeof onSetWordTarget === 'function') {
-                    onSetWordTarget();
-                  }
-                }}
-                className="toolbar-mobile-menu-item"
-                aria-label="Set Target">
-                <Target size={18} style={{ marginRight: '8px' }} />
-                Set Target
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  if (typeof onSetTimer === 'function') {
-                    onSetTimer();
-                  }
-                }}
-                className="toolbar-mobile-menu-item"
-                aria-label="Set Timer">
-                <Timer size={18} style={{ marginRight: '8px' }} />
-                Set Timer
-              </button>
-              <button
-                type="button"
-                disabled={!hasContent}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (!hasContent) return;
-                  setIsMobileMenuOpen(false);
-                  if (typeof onClearText === 'function') {
-                    onClearText();
-                  }
-                }}
-                className={`toolbar-mobile-menu-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
-                aria-label="Clear Text">
-                <Trash2 size={18} style={{ marginRight: '8px' }} />
-                Clear Text
-              </button>
-              <button
-                type="button"
-                disabled={!hasContent}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (!hasContent) return;
-                  setIsMobileMenuOpen(false);
-                  if (typeof onOpenExport === 'function') {
-                    onOpenExport();
-                  }
-                }}
-                className={`toolbar-mobile-menu-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
-                aria-label="Export">
-                <Download size={18} style={{ marginRight: '8px' }} />
-                Export
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  if (typeof onOpenSettings === 'function') {
-                    onOpenSettings();
-                  }
-                }}
-                className="toolbar-mobile-menu-item"
-                aria-label="Settings">
-                <Settings size={18} style={{ marginRight: '8px' }} />
-                Settings
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setIsMobileMenuOpen(false);
-                  if (typeof onOpenHelp === 'function') {
-                    onOpenHelp();
-                  }
-                }}
-                className="toolbar-mobile-menu-item"
-                aria-label="Help">
-                <HelpCircle size={18} style={{ marginRight: '8px' }} />
-                Help
-              </button>
-              <button
-                type="button"
-                disabled={!hasContent}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  if (!hasContent) return;
-                  setIsMobileMenuOpen(false);
-                  if (typeof onOpenEmail === 'function') {
-                    onOpenEmail();
-                  }
-                }}
-                className={`toolbar-mobile-menu-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
-                aria-label="Email">
-                <Mail size={18} style={{ marginRight: '8px' }} />
-                Email
-              </button>
+              {mobileMenuItems.map(({ onClick, icon: Icon, label, ariaLabel, disabled }) => (
+                <MobileMenuItem
+                  key={ariaLabel}
+                  onClick={() => { if (!disabled) { closeMobileMenu(); onClick(); } }}
+                  disabled={disabled}
+                  icon={Icon}
+                  label={label}
+                  ariaLabel={ariaLabel}
+                />
+              ))}
             </div>
           )}
         </div>
