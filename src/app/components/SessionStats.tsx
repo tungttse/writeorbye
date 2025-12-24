@@ -1,5 +1,7 @@
 'use client';
 
+import { Timer } from 'lucide-react';
+
 type SessionStatsProps = {
   stats: {
     wpm: number;
@@ -21,37 +23,35 @@ const SessionStats = ({ stats, isVisible, timeRemaining }: SessionStatsProps) =>
   if (!isVisible) return null;
 
   return (
-    <div className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-800 text-white px-4 py-2 shadow-md sticky top-0 z-50">
-      <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="text-blue-200">WPM</span>
-            <span className="font-mono font-bold text-lg">{stats.wpm}</span>
+    <div className="stats-bar">
+      <div className="stats-container">
+        <div className="stats-group">
+          <div className="stats-item">
+            <span className="stats-label">WPM</span>
+            <span className="stats-value">{stats.wpm}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-blue-200">Words</span>
-            <span className="font-mono font-bold text-lg">{stats.wordsWritten}</span>
+          <div className="stats-item">
+            <span className="stats-label">Words</span>
+            <span className="stats-value">{stats.wordsWritten}</span>
           </div>
         </div>
         
         {timeRemaining !== undefined && timeRemaining > 0 && (
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span className={`font-mono font-bold text-xl ${timeRemaining <= 60 ? 'text-red-300 animate-pulse' : ''}`}>
+          <div className="stats-item">
+            <Timer size={20} className="stats-label" />
+            <span className={`stats-timer ${timeRemaining <= 60 ? 'stats-timer-warning' : ''}`}>
               {formatTime(timeRemaining)}
             </span>
           </div>
         )}
 
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2">
-            <span className="text-blue-200">Active</span>
+        <div className="stats-group">
+          <div className="stats-item">
+            <span className="stats-label">Active</span>
             <span className="font-mono">{formatTime(stats.activeTime)}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-blue-200">Session</span>
+          <div className="stats-item">
+            <span className="stats-label">Session</span>
             <span className="font-mono">{formatTime(stats.sessionDuration)}</span>
           </div>
         </div>

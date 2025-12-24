@@ -52,11 +52,49 @@ const theme = {
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
-function onError(error) {
+function onError(error: Error) {
 	console.error(error);
 }
 
-const LexicalEditor = forwardRef(function LexicalEditor({
+type SessionStatsData = {
+	wpm: number;
+	wordsWritten: number;
+	activeTime: number;
+	sessionDuration: number;
+};
+
+interface LexicalEditorProps {
+	onToggleFullScreen?: () => void;
+	onToggleDarkMode?: () => void;
+	onSetWordTarget?: () => void;
+	onSetTimer?: () => void;
+	onClearText?: () => void;
+	onWordCountChange?: (count: number) => void;
+	onCharCountChange?: (count: number) => void;
+	onOpenSettings?: () => void;
+	onOpenExport?: () => void;
+	onOpenHelp?: () => void;
+	onOpenEmail?: () => void;
+	hasContent?: boolean;
+	isDarkMode?: boolean;
+	isSessionActive?: boolean;
+	isWritingSessionActive?: boolean;
+	inactivityThreshold?: number;
+	punishmentMode?: string;
+	onInactivityWarning?: () => void;
+	onInactivityPunishment?: () => void;
+	onActivity?: () => void;
+	onStatsUpdate?: (stats: SessionStatsData) => void;
+}
+
+export interface LexicalEditorHandle {
+	clear: () => void;
+	exportAsText: () => string | undefined;
+	exportAsMarkdown: () => string | undefined;
+	downloadFile: (content: string, filename: string, type: string) => void;
+}
+
+const LexicalEditor = forwardRef<LexicalEditorHandle, LexicalEditorProps>(function LexicalEditor({
 	onToggleFullScreen = () => { },
 	onToggleDarkMode = () => { },
 	onSetWordTarget = () => { },
@@ -79,16 +117,16 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 	onInactivityPunishment = () => { },
 	onActivity = () => { },
 	// Session stats props
-	onStatsUpdate = () => { }
-} = {}, ref) {
-	const clearRef = useRef(null);
-	const exportRef = useRef(null);
+	onStatsUpdate = (_stats: SessionStatsData) => { }
+}, ref) {
+	const clearRef = useRef<{ clear: () => void } | null>(null);
+	const exportRef = useRef<{ exportAsText: () => string; exportAsMarkdown: () => string; downloadFile: (content: string, filename: string, type: string) => void } | null>(null);
 
 	useImperativeHandle(ref, () => ({
 		clear: () => clearRef.current?.clear(),
 		exportAsText: () => exportRef.current?.exportAsText(),
 		exportAsMarkdown: () => exportRef.current?.exportAsMarkdown(),
-		downloadFile: (content, filename, type) => exportRef.current?.downloadFile(content, filename, type)
+		downloadFile: (content: string, filename: string, type: string) => exportRef.current?.downloadFile(content, filename, type)
 	}));
 	const initialConfig = {
 		namespace: 'MyEditor',
@@ -132,13 +170,14 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 						isActive={isWritingSessionActive}
 						inactivityThreshold={inactivityThreshold}
 						punishmentMode={punishmentMode}
-						onInactivityWarning={onInactivityWarning}
+						onInactivityWarning={onInactivityWarning as () => void}
 						onInactivityPunishment={onInactivityPunishment}
 						onActivity={onActivity}
 					/>
 					<SessionStatsPlugin
 						isSessionActive={isWritingSessionActive}
-						onStatsUpdate={onStatsUpdate}
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						onStatsUpdate={onStatsUpdate as any}
 					/>
 					<ExportPlugin exportRef={exportRef} />
 				</div>

@@ -221,11 +221,11 @@ export default function WritePage() {
   };
 
   return (
-    <div className={`min-h-screen h-full w-full flex flex-col transition-all duration-300 ${isInactivityWarning ? 'inactivity-warning' : ''}`}>
+    <div className={`app-container ${isInactivityWarning ? 'inactivity-warning' : ''}`}>
       {/* Session Stats */}
       <SessionStats stats={sessionStats} isVisible={isWritingSessionActive} timeRemaining={timeRemaining} />
 
-      <div className="relative flex-1">
+      <div className="editor-wrapper">
         <LexicalEditor 
           ref={editorRef}
           onToggleFullScreen={toggleFullScreen}
@@ -252,12 +252,12 @@ export default function WritePage() {
         />
        
         {/* Word Count Display with Progress */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-200 dark:bg-gray-800">
-          <div className="max-w-xl mx-auto">
+        <div className="word-count-bar">
+          <div className="word-count-container">
             {wordTarget > 0 && (
               <ProgressBar current={wordCount} target={wordTarget} />
             )}
-            <div className="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <div className="word-count-text">
               <span className="font-medium">{wordCount}</span> words
               {wordTarget > 0 && <span> / {wordTarget} target</span>}
               <span className="mx-2">•</span>
@@ -269,27 +269,27 @@ export default function WritePage() {
 
       {/* Word Target Modal */}
       {showWordTargetInput && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20 px-4 z-50">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">Set Word Target</h2>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-title">Set Word Target</h2>
             <form onSubmit={handleWordTargetSubmit}>
               <input
                 type="number"
                 name="wordTarget"
-                className="p-4 border border-gray-300 dark:border-gray-600 rounded-md w-full mb-4 bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
+                className="modal-input"
                 placeholder="Enter word count target"
               />
-              <div className="flex justify-end space-x-4">
+              <div className="btn-row">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-md"
+                  className="btn-cancel"
                   onClick={() => setShowWordTargetInput(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                  className="btn-primary"
                 >
                   Set
                 </button>
@@ -301,23 +301,23 @@ export default function WritePage() {
 
       {/* Timer Modal */}
       {showTimerInput && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20 px-4 z-50">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">Set Timer & Start Session</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="modal-title">Set Timer & Start Session</h2>
+            <p className="modal-helper-text">
               Starting a timer will begin your writing session with inactivity detection.
             </p>
             
             {/* Quick Select Buttons */}
             <div className="mb-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Quick Select:</p>
-              <div className="grid grid-cols-3 gap-2">
+              <p className="modal-helper-text-sm">Quick Select:</p>
+              <div className="quick-select-grid">
                 {[5, 10, 15, 20, 25, 30].map((minutes) => (
                   <button
                     key={minutes}
                     type="button"
                     onClick={() => handleQuickTimerSelectWithSession(minutes)}
-                    className="px-4 py-2 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md transition-colors font-medium"
+                    className="btn-quick-select"
                   >
                     {minutes} min
                   </button>
@@ -326,24 +326,24 @@ export default function WritePage() {
             </div>
 
             <form onSubmit={handleTimerSubmitWithSession}>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Or enter custom time:</p>
+              <p className="modal-helper-text-sm">Or enter custom time:</p>
               <input
                 type="number"
                 name="timer"
-                className="p-4 border border-gray-300 dark:border-gray-600 rounded-md w-full mb-4 bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
+                className="modal-input"
                 placeholder="Enter timer in minutes"
               />
-              <div className="flex justify-end space-x-4">
+              <div className="btn-row">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-md"
+                  className="btn-cancel"
                   onClick={() => setShowTimerInput(false)}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
+                  className="btn-primary"
                 >
                   Start Session
                 </button>

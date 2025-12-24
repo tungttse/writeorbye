@@ -8,7 +8,7 @@ const Footer = ({ variant = 'app' }: FooterProps) => {
   const isLanding = variant === 'landing';
 
   return (
-    <footer className={`text-center text-gray-500 dark:text-gray-400 space-y-2 ${isLanding ? 'mt-24 text-sm' : 'py-3 text-xs'}`}>
+    <footer className={`footer ${isLanding ? 'footer-landing' : 'footer-app'}`}>
       {isLanding && (
         <p>Write or Bye — Because sometimes you need a little pressure to create.</p>
       )}
@@ -16,7 +16,7 @@ const Footer = ({ variant = 'app' }: FooterProps) => {
         Contact:{' '}
         <a 
           href="mailto:tungttse@gmail.com" 
-          className="text-blue-500 hover:text-blue-400 underline"
+          className="footer-link"
         >
           tungttse@gmail.com
         </a>
