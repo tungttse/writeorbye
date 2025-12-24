@@ -176,8 +176,7 @@ const LexicalEditor = forwardRef<LexicalEditorHandle, LexicalEditorProps>(functi
 					/>
 					<SessionStatsPlugin
 						isSessionActive={isWritingSessionActive}
-						// eslint-disable-next-line @typescript-eslint/no-explicit-any
-						onStatsUpdate={onStatsUpdate as any}
+						onStatsUpdate={onStatsUpdate as unknown as () => void}
 					/>
 					<ExportPlugin exportRef={exportRef} />
 				</div>
