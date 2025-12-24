@@ -21,7 +21,7 @@ const SessionStats = ({ stats, isVisible, timeRemaining }: SessionStatsProps) =>
   if (!isVisible) return null;
 
   return (
-    <div className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-800 text-white px-4 py-2 shadow-md z-40">
+    <div className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-800 dark:to-indigo-800 text-white px-4 py-2 shadow-md sticky top-0 z-50">
       <div className="max-w-4xl mx-auto flex items-center justify-between text-sm">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">

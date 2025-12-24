@@ -9,6 +9,7 @@ import ExportModal from '../components/ExportModal';
 import HelpModal from '../components/HelpModal';
 import EmailModal from '../components/EmailModal';
 import ConfirmModal from '../components/ConfirmModal';
+import Footer from '../components/Footer';
 
 type SessionStatsData = {
   wpm: number;
@@ -240,6 +241,7 @@ export default function WritePage() {
           onOpenEmail={() => setShowEmail(true)}
           hasContent={wordCount > 0}
           isDarkMode={isDarkMode}
+          isSessionActive={isWritingSessionActive}
           isWritingSessionActive={isWritingSessionActive}
           inactivityThreshold={settings.inactivityThreshold}
           punishmentMode={settings.punishmentMode}
@@ -390,6 +392,8 @@ export default function WritePage() {
         cancelText="Keep Writing"
         variant="danger"
       />
+
+      <Footer />
     </div>
   );
 }

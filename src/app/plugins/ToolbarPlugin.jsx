@@ -61,7 +61,8 @@ export default function ToolbarPlugin({
   onOpenHelp = () => {},
   onOpenEmail = () => {},
   hasContent = false,
-  isDarkMode = false
+  isDarkMode = false,
+  isSessionActive = false
 }) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
@@ -140,7 +141,7 @@ export default function ToolbarPlugin({
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="toolbar" ref={toolbarRef}>
+    <div className={`toolbar ${!isSessionActive ? 'no-stats' : ''}`} ref={toolbarRef}>
       {/* Left side - Formatting buttons */}
       <div className="toolbar-left">
         <Link

@@ -70,6 +70,7 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 	onOpenEmail = () => { },
 	hasContent = false,
 	isDarkMode = false,
+	isSessionActive = false,
 	// Inactivity props
 	isWritingSessionActive = false,
 	inactivityThreshold = 5,
@@ -111,6 +112,7 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 					onOpenEmail={onOpenEmail}
 					hasContent={hasContent}
 					isDarkMode={isDarkMode}
+					isSessionActive={isSessionActive}
 				/>
 				<div className="editor-inner">
 					<RichTextPlugin

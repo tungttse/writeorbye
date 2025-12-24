@@ -57,6 +57,7 @@ body {
     text-align: left;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    overflow: visible;
   }
   
   .editor-inner {
@@ -359,6 +360,13 @@ body {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     vertical-align: middle;
+    position: sticky;
+    top: 40px;
+    z-index: 40;
+  }
+
+  .toolbar.no-stats {
+    top: 0;
   }
 
   .toolbar-left,

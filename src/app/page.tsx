@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Footer from './components/Footer';
 
 export default function Home() {
   return (
@@ -92,10 +93,7 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Footer */}
-        <footer className="mt-24 text-center text-gray-500 text-sm">
-          <p>Write or Bye — Because sometimes you need a little pressure to create.</p>
-        </footer>
+        <Footer variant="landing" />
       </div>
     </div>
   );
