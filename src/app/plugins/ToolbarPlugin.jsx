@@ -20,6 +20,31 @@ import {
   UNDO_COMMAND,
 } from 'lexical';
 import {useCallback, useEffect, useRef, useState} from 'react';
+import {
+  Undo2,
+  Redo2,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Timer,
+  Target,
+  Trash2,
+  Moon,
+  Sun,
+  Maximize,
+  Download,
+  Settings,
+  HelpCircle,
+  Mail,
+  Menu,
+  Home
+} from 'lucide-react';
+import Link from 'next/link';
 
 function Divider() {
   return <div className="divider" />;
@@ -30,7 +55,13 @@ export default function ToolbarPlugin({
   onToggleDarkMode = () => {},
   onSetWordTarget = () => {},
   onSetTimer = () => {},
-  onClearText = () => {}
+  onClearText = () => {},
+  onOpenSettings = () => {},
+  onOpenExport = () => {},
+  onOpenHelp = () => {},
+  onOpenEmail = () => {},
+  hasContent = false,
+  isDarkMode = false
 }) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
@@ -112,6 +143,15 @@ export default function ToolbarPlugin({
     <div className="toolbar" ref={toolbarRef}>
       {/* Left side - Formatting buttons */}
       <div className="toolbar-left">
+        <Link
+          href="/"
+          className="toolbar-item spaced"
+          style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          aria-label="Home"
+          title="Back to Home">
+          <Home size={18} />
+        </Link>
+        <Divider />
         <button
           disabled={!canUndo}
           onClick={() => {
@@ -119,7 +159,7 @@ export default function ToolbarPlugin({
           }}
           className="toolbar-item spaced"
           aria-label="Undo">
-          <i className="format undo" />
+          <Undo2 size={18} />
         </button>
         <button
           disabled={!canRedo}
@@ -128,7 +168,7 @@ export default function ToolbarPlugin({
           }}
           className="toolbar-item"
           aria-label="Redo">
-          <i className="format redo" />
+          <Redo2 size={18} />
         </button>
         <Divider />
         <button
@@ -137,7 +177,7 @@ export default function ToolbarPlugin({
           }}
           className={'toolbar-item spaced ' + (isBold ? 'active' : '')}
           aria-label="Format Bold">
-          <i className="format bold" />
+          <Bold size={18} />
         </button>
         <button
           onClick={() => {
@@ -145,7 +185,7 @@ export default function ToolbarPlugin({
           }}
           className={'toolbar-item spaced ' + (isItalic ? 'active' : '')}
           aria-label="Format Italics">
-          <i className="format italic" />
+          <Italic size={18} />
         </button>
         <button
           onClick={() => {
@@ -153,7 +193,7 @@ export default function ToolbarPlugin({
           }}
           className={'toolbar-item spaced ' + (isUnderline ? 'active' : '')}
           aria-label="Format Underline">
-          <i className="format underline" />
+          <Underline size={18} />
         </button>
         <button
           onClick={() => {
@@ -161,7 +201,7 @@ export default function ToolbarPlugin({
           }}
           className={'toolbar-item spaced ' + (isStrikethrough ? 'active' : '')}
           aria-label="Format Strikethrough">
-          <i className="format strikethrough" />
+          <Strikethrough size={18} />
         </button>
         <Divider />
         <button
@@ -170,7 +210,7 @@ export default function ToolbarPlugin({
           }}
           className="toolbar-item spaced"
           aria-label="Left Align">
-          <i className="format left-align" />
+          <AlignLeft size={18} />
         </button>
         <button
           onClick={() => {
@@ -178,7 +218,7 @@ export default function ToolbarPlugin({
           }}
           className="toolbar-item spaced"
           aria-label="Center Align">
-          <i className="format center-align" />
+          <AlignCenter size={18} />
         </button>
         <button
           onClick={() => {
@@ -186,7 +226,7 @@ export default function ToolbarPlugin({
           }}
           className="toolbar-item spaced"
           aria-label="Right Align">
-          <i className="format right-align" />
+          <AlignRight size={18} />
         </button>
         <button
           onClick={() => {
@@ -194,7 +234,7 @@ export default function ToolbarPlugin({
           }}
           className="toolbar-item"
           aria-label="Justify Align">
-          <i className="format justify-align" />
+          <AlignJustify size={18} />
         </button>
       </div>
 
@@ -220,20 +260,7 @@ export default function ToolbarPlugin({
             style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
             aria-label="Full Screen"
             title="Full Screen">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{ width: '18px', height: '18px', pointerEvents: 'none' }}>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 3H5a2 2 0 00-2 2v3m0 10v3a2 2 0 002 2h3m10-18h3a2 2 0 012 2v3m0 10v3a2 2 0 01-2 2h-3"
-              />
-            </svg>
+            <Maximize size={18} />
           </button>
           <button
             type="button"
@@ -248,21 +275,8 @@ export default function ToolbarPlugin({
             className="toolbar-item spaced"
             style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
             aria-label="Dark Mode"
-            title="Dark Mode">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{ width: '18px', height: '18px', pointerEvents: 'none' }}>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.05 19.95l-.707-.707M21 12h-1M4 12H3m16.66 4.66l-.707-.707M4.05 4.05l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-              />
-            </svg>
+            title={isDarkMode ? 'Light Mode' : 'Dark Mode'}>
+            {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
           <button
             type="button"
@@ -278,20 +292,7 @@ export default function ToolbarPlugin({
             style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
             aria-label="Set Target"
             title="Set Target">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{ width: '18px', height: '18px', pointerEvents: 'none' }}>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm0-14a6 6 0 100 12 6 6 0 000-12zm0 10a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z"
-              />
-            </svg>
+            <Target size={18} />
           </button>
           <button
             type="button"
@@ -307,49 +308,89 @@ export default function ToolbarPlugin({
             style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
             aria-label="Set Timer"
             title="Set Timer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{ width: '18px', height: '18px', pointerEvents: 'none' }}>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Timer size={18} />
+          </button>
+          <button
+            type="button"
+            disabled={!hasContent}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!hasContent) return;
+              console.log('Clear Text button clicked');
+              if (typeof onClearText === 'function') {
+                onClearText();
+              }
+            }}
+            className={`toolbar-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
+            style={{ cursor: hasContent ? 'pointer' : 'not-allowed', zIndex: 1000, position: 'relative' }}
+            aria-label="Clear Text"
+            title={hasContent ? 'Clear Text' : 'Nothing to clear'}>
+            <Trash2 size={18} />
+          </button>
+          <button
+            type="button"
+            disabled={!hasContent}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!hasContent) return;
+              if (typeof onOpenExport === 'function') {
+                onOpenExport();
+              }
+            }}
+            className={`toolbar-item spaced ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
+            style={{ cursor: hasContent ? 'pointer' : 'not-allowed', zIndex: 1000, position: 'relative' }}
+            aria-label="Export"
+            title={hasContent ? 'Export' : 'Nothing to export'}>
+            <Download size={18} />
           </button>
           <button
             type="button"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              console.log('Clear Text button clicked');
-              if (typeof onClearText === 'function') {
-                onClearText();
+              if (typeof onOpenSettings === 'function') {
+                onOpenSettings();
               }
             }}
             className="toolbar-item"
             style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
-            aria-label="Clear Text"
-            title="Clear Text">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{ width: '18px', height: '18px', pointerEvents: 'none' }}>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            aria-label="Settings"
+            title="Settings">
+            <Settings size={18} />
+          </button>
+          <button
+            type="button"
+            disabled={!hasContent}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!hasContent) return;
+              if (typeof onOpenEmail === 'function') {
+                onOpenEmail();
+              }
+            }}
+            className={`toolbar-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
+            style={{ cursor: hasContent ? 'pointer' : 'not-allowed', zIndex: 1000, position: 'relative' }}
+            aria-label="Email"
+            title={hasContent ? 'Email to yourself' : 'Nothing to email'}>
+            <Mail size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (typeof onOpenHelp === 'function') {
+                onOpenHelp();
+              }
+            }}
+            className="toolbar-item"
+            style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
+            aria-label="Help"
+            title="Help">
+            <HelpCircle size={18} />
           </button>
         </div>
 
@@ -366,25 +407,20 @@ export default function ToolbarPlugin({
             style={{ cursor: 'pointer', zIndex: 1000, position: 'relative' }}
             aria-label="More Options"
             title="More Options">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              style={{ width: '18px', height: '18px', pointerEvents: 'none' }}>
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
+            <Menu size={18} />
           </button>
 
           {/* Mobile dropdown menu */}
           {isMobileMenuOpen && (
             <div className="toolbar-mobile-dropdown">
+              <Link
+                href="/"
+                className="toolbar-mobile-menu-item"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Home">
+                <Home size={18} style={{ marginRight: '8px' }} />
+                Back to Home
+              </Link>
               <button
                 type="button"
                 onClick={(e) => {
@@ -397,20 +433,7 @@ export default function ToolbarPlugin({
                 }}
                 className="toolbar-mobile-menu-item"
                 aria-label="Full Screen">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  style={{ width: '18px', height: '18px', marginRight: '8px' }}>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 3H5a2 2 0 00-2 2v3m0 10v3a2 2 0 002 2h3m10-18h3a2 2 0 012 2v3m0 10v3a2 2 0 01-2 2h-3"
-                  />
-                </svg>
+                <Maximize size={18} style={{ marginRight: '8px' }} />
                 Full Screen
               </button>
               <button
@@ -424,22 +447,9 @@ export default function ToolbarPlugin({
                   }
                 }}
                 className="toolbar-mobile-menu-item"
-                aria-label="Dark Mode">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  style={{ width: '18px', height: '18px', marginRight: '8px' }}>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3v1m0 16v1m8.66-12.66l-.707.707M4.05 19.95l-.707-.707M21 12h-1M4 12H3m16.66 4.66l-.707-.707M4.05 4.05l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
-                Dark Mode
+                aria-label={isDarkMode ? 'Light Mode' : 'Dark Mode'}>
+                {isDarkMode ? <Sun size={18} style={{ marginRight: '8px' }} /> : <Moon size={18} style={{ marginRight: '8px' }} />}
+                {isDarkMode ? 'Light Mode' : 'Dark Mode'}
               </button>
               <button
                 type="button"
@@ -453,20 +463,7 @@ export default function ToolbarPlugin({
                 }}
                 className="toolbar-mobile-menu-item"
                 aria-label="Set Target">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  style={{ width: '18px', height: '18px', marginRight: '8px' }}>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16zm0-14a6 6 0 100 12 6 6 0 000-12zm0 10a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z"
-                  />
-                </svg>
+                <Target size={18} style={{ marginRight: '8px' }} />
                 Set Target
               </button>
               <button
@@ -481,21 +478,42 @@ export default function ToolbarPlugin({
                 }}
                 className="toolbar-mobile-menu-item"
                 aria-label="Set Timer">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  style={{ width: '18px', height: '18px', marginRight: '8px' }}>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <Timer size={18} style={{ marginRight: '8px' }} />
                 Set Timer
+              </button>
+              <button
+                type="button"
+                disabled={!hasContent}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!hasContent) return;
+                  setIsMobileMenuOpen(false);
+                  if (typeof onClearText === 'function') {
+                    onClearText();
+                  }
+                }}
+                className={`toolbar-mobile-menu-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
+                aria-label="Clear Text">
+                <Trash2 size={18} style={{ marginRight: '8px' }} />
+                Clear Text
+              </button>
+              <button
+                type="button"
+                disabled={!hasContent}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!hasContent) return;
+                  setIsMobileMenuOpen(false);
+                  if (typeof onOpenExport === 'function') {
+                    onOpenExport();
+                  }
+                }}
+                className={`toolbar-mobile-menu-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
+                aria-label="Export">
+                <Download size={18} style={{ marginRight: '8px' }} />
+                Export
               </button>
               <button
                 type="button"
@@ -503,27 +521,46 @@ export default function ToolbarPlugin({
                   e.preventDefault();
                   e.stopPropagation();
                   setIsMobileMenuOpen(false);
-                  if (typeof onClearText === 'function') {
-                    onClearText();
+                  if (typeof onOpenSettings === 'function') {
+                    onOpenSettings();
                   }
                 }}
                 className="toolbar-mobile-menu-item"
-                aria-label="Clear Text">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  style={{ width: '18px', height: '18px', marginRight: '8px' }}>
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                Clear Text
+                aria-label="Settings">
+                <Settings size={18} style={{ marginRight: '8px' }} />
+                Settings
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsMobileMenuOpen(false);
+                  if (typeof onOpenHelp === 'function') {
+                    onOpenHelp();
+                  }
+                }}
+                className="toolbar-mobile-menu-item"
+                aria-label="Help">
+                <HelpCircle size={18} style={{ marginRight: '8px' }} />
+                Help
+              </button>
+              <button
+                type="button"
+                disabled={!hasContent}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  if (!hasContent) return;
+                  setIsMobileMenuOpen(false);
+                  if (typeof onOpenEmail === 'function') {
+                    onOpenEmail();
+                  }
+                }}
+                className={`toolbar-mobile-menu-item ${!hasContent ? 'opacity-40 cursor-not-allowed' : ''}`}
+                aria-label="Email">
+                <Mail size={18} style={{ marginRight: '8px' }} />
+                Email
               </button>
             </div>
           )}

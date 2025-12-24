@@ -1,207 +1,140 @@
 'use client';
 
-import { useState, useEffect, FormEvent, useRef } from 'react';
-import CircularTimer from './components/CircularTimer';
-import LexicalEditor from './components/LexicalEditor';
+import Link from 'next/link';
 
 export default function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
-  const [wordCount, setWordCount] = useState(0);
-  const [wordTarget, setWordTarget] = useState(0);
-  const [timer, setTimer] = useState(0);
-  const [showWordTargetInput, setShowWordTargetInput] = useState(false);
-  const [showTimerInput, setShowTimerInput] = useState(false);
-  const [isTimerActive, setIsTimerActive] = useState(false);
-  const editorRef = useRef(null);
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900 text-white">
+      {/* Hero Section */}
+      <div className="container mx-auto px-4 py-20">
+        <div className="max-w-4xl mx-auto text-center">
+          {/* Logo/Title */}
+          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            Write or Bye
+          </h1>
+          
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            The ultimate writing productivity tool. Keep writing or face the consequences.
+          </p>
 
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
+          {/* CTA Button */}
+          <Link
+            href="/app"
+            className="inline-block px-8 py-4 text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-600 rounded-full hover:from-blue-600 hover:to-purple-700 transition-all transform hover:scale-105 shadow-lg hover:shadow-xl"
+          >
+            Start Writing →
+          </Link>
+        </div>
 
-  const toggleFullScreen = () => {
-    console.log('toggleFullScreen function called');
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
-    setIsFullScreen(!isFullScreen);
-  };
+        {/* Features Section */}
+        <div className="mt-24 grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <FeatureCard
+            icon="⏱️"
+            title="Timed Sessions"
+            description="Set a timer and commit to writing. Track your WPM, words written, and active time."
+          />
+          <FeatureCard
+            icon="😈"
+            title="Punishment Modes"
+            description="Choose your consequence: gentle warnings, annoying sounds, or hardcore text deletion!"
+          />
+          <FeatureCard
+            icon="📊"
+            title="Track Progress"
+            description="Set word targets, see progress bars, and watch your stats in real-time."
+          />
+        </div>
 
-  const toggleDarkMode = () => {
-    console.log('toggleDarkMode function called');
-    setIsDarkMode(!isDarkMode);
-  };
+        {/* How It Works */}
+        <div className="mt-24 max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            <StepCard number="1" title="Set Timer" description="Choose your session length" />
+            <StepCard number="2" title="Start Writing" description="Begin your focused session" />
+            <StepCard number="3" title="Keep Going" description="Don't stop or face consequences" />
+            <StepCard number="4" title="Export" description="Save your work as .txt or .md" />
+          </div>
+        </div>
 
+        {/* Punishment Modes Showcase */}
+        <div className="mt-24 max-w-4xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-12">Choose Your Challenge</h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            <ModeCard
+              mode="Gentle"
+              color="green"
+              description="Screen turns red as a warning. Perfect for beginners."
+              icon="🌱"
+            />
+            <ModeCard
+              mode="Medium"
+              color="yellow"
+              description="Warning sounds + visual effects. For the committed writer."
+              icon="⚡"
+            />
+            <ModeCard
+              mode="Hardcore"
+              color="red"
+              description="Your text starts DELETING. Only for the brave!"
+              icon="💀"
+            />
+          </div>
+        </div>
 
+        {/* Final CTA */}
+        <div className="mt-24 text-center">
+          <p className="text-xl text-gray-400 mb-6">Ready to boost your writing productivity?</p>
+          <Link
+            href="/app"
+            className="inline-block px-8 py-4 text-lg font-semibold bg-white text-gray-900 rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 shadow-lg"
+          >
+            Start Writing Now
+          </Link>
+        </div>
 
-  const clearText = () => {
-    console.log('clearText function called');
-    if (editorRef.current) {
-      (editorRef.current as { clear: () => void }).clear();
-    }
-  };
+        {/* Footer */}
+        <footer className="mt-24 text-center text-gray-500 text-sm">
+          <p>Write or Bye — Because sometimes you need a little pressure to create.</p>
+        </footer>
+      </div>
+    </div>
+  );
+}
 
-  const handleWordCountChange = (count: number) => {
-    setWordCount(count);
-  };
+function FeatureCard({ icon, title, description }: { icon: string; title: string; description: string }) {
+  return (
+    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center hover:bg-white/15 transition-colors">
+      <div className="text-4xl mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-400">{description}</p>
+    </div>
+  );
+}
 
-  const handleSetWordTarget = () => {
-    console.log('handleSetWordTarget function called');
-    setShowWordTargetInput(true);
-  };
+function StepCard({ number, title, description }: { number: string; title: string; description: string }) {
+  return (
+    <div className="text-center">
+      <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-xl font-bold mx-auto mb-3">
+        {number}
+      </div>
+      <h3 className="font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-gray-400">{description}</p>
+    </div>
+  );
+}
 
-  const handleSetTimer = () => {
-    console.log('handleSetTimer function called');
-    setShowTimerInput(true);
-  };
-
-  const handleWordTargetSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const target = event.currentTarget.elements.namedItem('wordTarget') as HTMLInputElement;
-    if (target) {
-      setWordTarget(parseInt(target.value, 10));
-      setShowWordTargetInput(false);
-    }
-  };
-
-  const handleQuickTimerSelect = (minutes: number) => {
-    setTimer(minutes * 60); // Convert minutes to seconds
-    setIsTimerActive(true);
-    setShowTimerInput(false);
-  };
-
-  const handleTimerSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const time = event.currentTarget.elements.namedItem('timer') as HTMLInputElement;
-    if (time) {
-      setTimer(parseInt(time.value, 10) * 60); // Convert minutes to seconds
-      setIsTimerActive(true);
-      setShowTimerInput(false);
-    }
-  };
-
-  const handleTimerTimeout = () => {
-    setIsTimerActive(false);
-    // Add any additional timeout logic here
+function ModeCard({ mode, color, description, icon }: { mode: string; color: string; description: string; icon: string }) {
+  const colorClasses = {
+    green: 'border-green-500 text-green-400',
+    yellow: 'border-yellow-500 text-yellow-400',
+    red: 'border-red-500 text-red-400',
   };
 
   return (
-    <div className="h-full w-full flex flex-col">
-      <div className="relative flex-1">
-        <LexicalEditor 
-          ref={editorRef}
-          {...({
-            onToggleFullScreen: toggleFullScreen,
-            onToggleDarkMode: toggleDarkMode,
-            onSetWordTarget: handleSetWordTarget,
-            onSetTimer: handleSetTimer,
-            onClearText: clearText,
-            onWordCountChange: handleWordCountChange
-          } as any)}
-        />
-       
-        {/* Word Count Display */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gray-200 dark:bg-gray-800 text-center">
-          {wordCount} of {wordTarget}
-        </div>
-      </div>
-
-      {/* Circular Timer */}
-      {isTimerActive && (
-        <CircularTimer
-          initialTime={timer}
-          onTimeout={handleTimerTimeout}
-        />
-      )}
-
-      {/* Word Target Modal */}
-      {showWordTargetInput && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20 px-4">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">Set Word Target</h2>
-            <form onSubmit={handleWordTargetSubmit}>
-              <input
-                type="number"
-                name="wordTarget"
-                className="p-4 border border-gray-300 dark:border-gray-600 rounded-md w-full mb-4 bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
-                placeholder="Enter word count target"
-              />
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-md"
-                  onClick={() => setShowWordTargetInput(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                >
-                  Set
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Timer Modal */}
-      {showTimerInput && (
-        <div className="fixed inset-0 flex items-start justify-center bg-black bg-opacity-50 pt-20 px-4">
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-md w-full max-w-md">
-            <h2 className="text-lg font-bold mb-4">Set Timer</h2>
-            
-            {/* Quick Select Buttons */}
-            <div className="mb-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Quick Select:</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[5, 10, 15, 20, 25, 30].map((minutes) => (
-                  <button
-                    key={minutes}
-                    type="button"
-                    onClick={() => handleQuickTimerSelect(minutes)}
-                    className="px-4 py-2 bg-blue-100 dark:bg-blue-900 hover:bg-blue-200 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded-md transition-colors font-medium"
-                  >
-                    {minutes} min
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <form onSubmit={handleTimerSubmit}>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Or enter custom time:</p>
-              <input
-                type="number"
-                name="timer"
-                className="p-4 border border-gray-300 dark:border-gray-600 rounded-md w-full mb-4 bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
-                placeholder="Enter timer in minutes"
-              />
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded-md"
-                  onClick={() => setShowTimerInput(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md"
-                >
-                  Set
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+    <div className={`border-2 ${colorClasses[color as keyof typeof colorClasses]} rounded-xl p-6 text-center bg-white/5`}>
+      <div className="text-3xl mb-3">{icon}</div>
+      <h3 className={`text-xl font-bold mb-2 ${colorClasses[color as keyof typeof colorClasses]}`}>{mode}</h3>
+      <p className="text-gray-400 text-sm">{description}</p>
     </div>
   );
 }

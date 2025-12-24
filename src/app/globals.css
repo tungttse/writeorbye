@@ -63,6 +63,10 @@ body {
     background: #fff;
     position: relative;
   }
+
+  .dark .editor-inner {
+    background: #1f2937;
+  }
   
   .editor-input {
     min-height: 500px;
@@ -74,6 +78,12 @@ body {
     outline: 0;
     padding: 15px 10px;
     caret-color: #444;
+    color: #1f2937;
+  }
+
+  .dark .editor-input {
+    caret-color: #f3f4f6;
+    color: #f3f4f6;
   }
   
   .editor-placeholder {
@@ -87,6 +97,10 @@ body {
     user-select: none;
     display: inline-block;
     pointer-events: none;
+  }
+
+  .dark .editor-placeholder {
+    color: #6b7280;
   }
   
   .editor-text-bold {
@@ -115,10 +129,19 @@ body {
     font-family: Menlo, Consolas, Monaco, monospace;
     font-size: 94%;
   }
+
+  .dark .editor-text-code {
+    background-color: #374151;
+    color: #e5e7eb;
+  }
   
   .editor-link {
     color: rgb(33, 111, 219);
     text-decoration: none;
+  }
+
+  .dark .editor-link {
+    color: rgb(96, 165, 250);
   }
   
   .editor-code {
@@ -136,6 +159,11 @@ body {
     overflow-x: auto;
     position: relative;
   }
+
+  .dark .editor-code {
+    background-color: #1e293b;
+    color: #e2e8f0;
+  }
   
   .editor-code:before {
     content: attr(data-gutter);
@@ -149,6 +177,12 @@ body {
     white-space: pre-wrap;
     text-align: right;
     min-width: 25px;
+  }
+
+  .dark .editor-code:before {
+    background-color: #334155;
+    border-right-color: #475569;
+    color: #94a3b8;
   }
   .editor-code:after {
     content: attr(data-highlight-language);
@@ -211,6 +245,10 @@ body {
     margin-bottom: 12px;
     padding: 0;
   }
+
+  .dark .editor-heading-h1 {
+    color: #f3f4f6;
+  }
   
   .editor-heading-h2 {
     font-size: 15px;
@@ -220,6 +258,10 @@ body {
     margin-top: 10px;
     padding: 0;
     text-transform: uppercase;
+  }
+
+  .dark .editor-heading-h2 {
+    color: #9ca3af;
   }
   
   .editor-quote {
@@ -231,6 +273,11 @@ body {
     border-left-width: 4px;
     border-left-style: solid;
     padding-left: 16px;
+  }
+
+  .dark .editor-quote {
+    color: #9ca3af;
+    border-left-color: #4b5563;
   }
   
   .editor-list-ol {
@@ -455,6 +502,11 @@ body {
     width: 1px;
     background-color: #eee;
     margin: 0 4px;
+    height: 24px;
+  }
+
+  .dark .toolbar .divider {
+    background-color: #4b5563;
   }
   
   .toolbar .toolbar-item .text {
@@ -519,5 +571,44 @@ body {
   
   i.justify-align {
     background-image: url(/icons/justify.svg);
+  }
+
+  /* Inactivity Warning Effects */
+  .inactivity-warning {
+    animation: warning-pulse 0.5s ease-in-out infinite;
+  }
+
+  .inactivity-warning .editor-container {
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  }
+
+  .inactivity-warning .editor-inner {
+    background-color: rgba(254, 202, 202, 0.3);
+  }
+
+  .dark .inactivity-warning .editor-inner {
+    background-color: rgba(127, 29, 29, 0.3);
+  }
+
+  @keyframes warning-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.85;
+    }
+  }
+
+  /* Dark mode styles for new components */
+  .dark .bg-gray-100 {
+    background-color: #374151;
+  }
+
+  .dark .text-gray-900 {
+    color: #f3f4f6;
+  }
+
+  .dark .border {
+    border-color: #4b5563;
   }
   

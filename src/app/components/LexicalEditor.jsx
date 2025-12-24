@@ -1,5 +1,5 @@
 import { ParagraphNode } from 'lexical';
-import { forwardRef } from 'react';
+import { forwardRef, useRef, useImperativeHandle } from 'react';
 
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
@@ -11,6 +11,9 @@ import ToolbarPlugin from '../plugins/ToolbarPlugin';
 import ClearEditorPlugin from '../plugins/ClearEditorPlugin';
 import WordCountPlugin from '../plugins/WordCountPlugin';
 import AutoSavePlugin from '../plugins/AutoSavePlugin';
+import InactivityPlugin from '../plugins/InactivityPlugin';
+import SessionStatsPlugin from '../plugins/SessionStatsPlugin';
+import ExportPlugin from '../plugins/ExportPlugin';
 
 const theme = {
 	code: 'editor-code',
@@ -59,15 +62,33 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 	onSetWordTarget = () => { },
 	onSetTimer = () => { },
 	onClearText = () => { },
-	onWordCountChange = () => { }
+	onWordCountChange = () => { },
+	onCharCountChange = () => { },
+	onOpenSettings = () => { },
+	onOpenExport = () => { },
+	onOpenHelp = () => { },
+	onOpenEmail = () => { },
+	hasContent = false,
+	isDarkMode = false,
+	// Inactivity props
+	isWritingSessionActive = false,
+	inactivityThreshold = 5,
+	punishmentMode = 'gentle',
+	onInactivityWarning = () => { },
+	onInactivityPunishment = () => { },
+	onActivity = () => { },
+	// Session stats props
+	onStatsUpdate = () => { }
 } = {}, ref) {
-	console.log('LexicalEditor received props:', {
-		onToggleFullScreen: typeof onToggleFullScreen,
-		onToggleDarkMode: typeof onToggleDarkMode,
-		onSetWordTarget: typeof onSetWordTarget,
-		onSetTimer: typeof onSetTimer,
-		onClearText: typeof onClearText
-	});
+	const clearRef = useRef(null);
+	const exportRef = useRef(null);
+
+	useImperativeHandle(ref, () => ({
+		clear: () => clearRef.current?.clear(),
+		exportAsText: () => exportRef.current?.exportAsText(),
+		exportAsMarkdown: () => exportRef.current?.exportAsMarkdown(),
+		downloadFile: (content, filename, type) => exportRef.current?.downloadFile(content, filename, type)
+	}));
 	const initialConfig = {
 		namespace: 'MyEditor',
 		theme,
@@ -84,6 +105,12 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 					onSetWordTarget={onSetWordTarget}
 					onSetTimer={onSetTimer}
 					onClearText={onClearText}
+					onOpenSettings={onOpenSettings}
+					onOpenExport={onOpenExport}
+					onOpenHelp={onOpenHelp}
+					onOpenEmail={onOpenEmail}
+					hasContent={hasContent}
+					isDarkMode={isDarkMode}
 				/>
 				<div className="editor-inner">
 					<RichTextPlugin
@@ -94,11 +121,24 @@ const LexicalEditor = forwardRef(function LexicalEditor({
 						}
 						ErrorBoundary={LexicalErrorBoundary}
 					/>
-					<ClearEditorPlugin clearEditorRef={ref} />
-					<WordCountPlugin onWordCountChange={onWordCountChange} />
+					<ClearEditorPlugin clearEditorRef={clearRef} />
+					<WordCountPlugin onWordCountChange={onWordCountChange} onCharCountChange={onCharCountChange} />
 					<AutoSavePlugin />
 					<HistoryPlugin />
 					<AutoFocusPlugin />
+					<InactivityPlugin
+						isActive={isWritingSessionActive}
+						inactivityThreshold={inactivityThreshold}
+						punishmentMode={punishmentMode}
+						onInactivityWarning={onInactivityWarning}
+						onInactivityPunishment={onInactivityPunishment}
+						onActivity={onActivity}
+					/>
+					<SessionStatsPlugin
+						isSessionActive={isWritingSessionActive}
+						onStatsUpdate={onStatsUpdate}
+					/>
+					<ExportPlugin exportRef={exportRef} />
 				</div>
 			</div>
 		</LexicalComposer>
